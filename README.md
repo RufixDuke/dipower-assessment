@@ -2,6 +2,9 @@
 
 This is a basic React Native app that displays a list of items fetched from a mock API endpoint. Each item displays its title, description, and an image. Tapping on an item navigates the user to a detail screen showing more information about that item.
 
+# Link to Download and Install the APk
+[Download APK](https://drive.google.com/file/d/1O_fnShQT6xp1gC0EVoWZq9qC_nPJiwk_/view?usp=drivesdk)
+
 ## Getting Started
 
 ### Prerequisites
@@ -13,7 +16,7 @@ This is a basic React Native app that displays a list of items fetched from a mo
 ### Installation
 
 1. Clone the repository to your local machine:
-- `git clone [https://github.com/RufixDuke/dipower-assessment.git](https://github.com/RufixDuke/dipower-assessment.git) dipower`
+- `git clone https://github.com/RufixDuke/dipower-assessment.git dipower`
 
 2. Navigate to the project directory:
 - `cd dipower`
