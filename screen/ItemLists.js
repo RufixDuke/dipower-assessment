@@ -1,21 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Constant from "expo-constants";
 import ListItem from "../components/ListItem";
-import { fetchItems } from "../src/store/ItemSlice";
+import { setItems } from "../src/store/ItemSlice";
 import { Colors } from "../constant/colors";
 import LoadingIndicator from "../components/LoadingIndicator";
+import axios from "axios";
 
 const ItemsListScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const { items, isLoading, error } = useSelector((state) => state.items);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const { items } = useSelector((state) => state.items);
+
+  const fetchItems = () => async (dispatch) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(
+        "https://jsonplaceholder.typicode.com/albums/1/photos"
+      );
+      dispatch(setItems(response?.data));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     dispatch(fetchItems());
-  }, []);
+  }, [dispatch]);
 
   const handleItemPress = (item) => {
     navigation.navigate("ItemDetailsScreen", { item });
