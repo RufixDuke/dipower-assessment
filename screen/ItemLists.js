@@ -6,9 +6,9 @@ import Constant from "expo-constants";
 import axios from "axios";
 
 import ListItem from "../components/ListItem";
-import { setItems } from "../src/store/ItemSlice";
 import { Colors } from "../constant/colors";
 import LoadingIndicator from "../components/LoadingIndicator";
+import { setItems } from "../src/store/ItemSlice";
 
 const ItemsListScreen = () => {
   const dispatch = useDispatch();
@@ -18,7 +18,7 @@ const ItemsListScreen = () => {
 
   const { items } = useSelector((state) => state.items);
 
-  const fetchItems = async () => {
+  const fetchItems = () => async () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
@@ -40,7 +40,7 @@ const ItemsListScreen = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchItems();
+      dispatch(fetchItems());
     }, [])
   );
 
@@ -60,30 +60,21 @@ const ItemsListScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text
-        style={{
-          fontSize: 20,
-          color: "white",
-          marginBottom: 20,
-          fontFamily: "Bold",
-        }}
-      >
-        List of Items
-      </Text>
+      <Text style={styles.header}>List of Items</Text>
       {isLoading && <LoadingIndicator color={"white"} size={"small"} />}
-      {error ? (
-        renderError()
-      ) : items.length > 0 ? (
+      {items.length > 0 ? (
         <>
           <FlatList
             data={items}
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
-            onRefresh={() => fetchItems()}
+            onRefresh={() => dispatch(fetchItems())}
             refreshing={isLoading}
             showsVerticalScrollIndicator={false}
           />
         </>
+      ) : error ? (
+        renderError()
       ) : null}
     </View>
   );
@@ -106,5 +97,11 @@ const styles = StyleSheet.create({
     fontFamily: "Book",
     fontSize: 16,
     textAlign: "center",
+  },
+  header: {
+    fontSize: 20,
+    color: "white",
+    marginBottom: 20,
+    fontFamily: "Bold",
   },
 });
