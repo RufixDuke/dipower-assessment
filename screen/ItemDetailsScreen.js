@@ -1,16 +1,17 @@
-import { Image, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import Constant from "expo-constants";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { useRoute } from "@react-navigation/native";
+import Constant from "expo-constants";
+
 import { Colors } from "../constant/colors";
 
 const ItemDetailsScreen = () => {
   const { item } = useRoute().params;
   return (
     <View style={styles.container}>
-      <Image source={{ uri: item.url }} style={styles.image} />
+      <Image source={{ uri: item?.url }} style={styles.image} />
       <View style={{ marginTop: 30, gap: 30 }}>
-        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.title}>{item?.title}</Text>
         <Text style={styles.desc}>
           This widget is a must-have for any household. It's incredibly
           versatile and can be used for a variety of tasks.

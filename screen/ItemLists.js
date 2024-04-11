@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import Constant from "expo-constants";
+import axios from "axios";
+
 import ListItem from "../components/ListItem";
 import { setItems } from "../src/store/ItemSlice";
 import { Colors } from "../constant/colors";
 import LoadingIndicator from "../components/LoadingIndicator";
-import axios from "axios";
 
 const ItemsListScreen = () => {
   const dispatch = useDispatch();
@@ -17,13 +18,19 @@ const ItemsListScreen = () => {
 
   const { items } = useSelector((state) => state.items);
 
-  const fetchItems = () => async (dispatch) => {
+  const fetchItems = async () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
         "https://jsonplaceholder.typicode.com/albums/1/photos"
       );
-      dispatch(setItems(response?.data));
+      const filteredData = response?.data?.map((item) => ({
+        id: item?.id,
+        title: item?.title,
+        url: item?.url,
+        thumbnailUrl: item?.thumbnailUrl,
+      }));
+      dispatch(setItems(filteredData));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -31,9 +38,11 @@ const ItemsListScreen = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(fetchItems());
-  }, [dispatch]);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchItems();
+    }, [])
+  );
 
   const handleItemPress = (item) => {
     navigation.navigate("ItemDetailsScreen", { item });
@@ -51,24 +60,31 @@ const ItemsListScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 20, color: "white", marginBottom: 20 }}>
+      <Text
+        style={{
+          fontSize: 20,
+          color: "white",
+          marginBottom: 20,
+          fontFamily: "Bold",
+        }}
+      >
         List of Items
       </Text>
+      {isLoading && <LoadingIndicator color={"white"} size={"small"} />}
       {error ? (
         renderError()
-      ) : (
+      ) : items.length > 0 ? (
         <>
-          {isLoading && <LoadingIndicator color={"white"} size={"large"} />}
           <FlatList
             data={items}
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
-            onRefresh={() => dispatch(fetchItems())}
+            onRefresh={() => fetchItems()}
             refreshing={isLoading}
             showsVerticalScrollIndicator={false}
           />
         </>
-      )}
+      ) : null}
     </View>
   );
 };
